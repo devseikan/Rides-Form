@@ -147,70 +147,91 @@
     </div>
   </div>
 
-  <script>
-    const form = document.getElementById("userForm");
-    const nameInput = document.getElementById("name");
-    const motorcycleInput = document.getElementById("motorcycle");
-    const tableBody = document.querySelector("#userTable tbody");
-    const eraseAllBtn = document.getElementById("eraseAllBtn");
+<script type="module">
+  // Firebase Config (replace with yours)
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      const name = nameInput.value.trim();
-      const motorcycle = motorcycleInput.value.trim();
-      if (!name || !motorcycle) return;
+  const firebaseConfig = {
+  apiKey: "AIzaSyDMasEE3Xx6bZivduxnAmhXmIPzHzbltRE",
+  authDomain: "ncbcrides.firebaseapp.com",
+  projectId: "ncbcrides",
+  storageBucket: "ncbcrides.firebasestorage.app",
+  messagingSenderId: "952843816808",
+  appId: "1:952843816808:web:50ed3153edcc2a3c9410dd",
+  measurementId: "G-NKTEMYRWVY"
+  };
 
-      saveEntry(name, motorcycle);
-      addRow(name, motorcycle);
-      form.reset();
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const ridesCollection = collection(db, "rides");
+
+  const form = document.getElementById("userForm");
+  const nameInput = document.getElementById("name");
+  const motorcycleInput = document.getElementById("motorcycle");
+  const tableBody = document.querySelector("#userTable tbody");
+  const eraseAllBtn = document.getElementById("eraseAllBtn");
+
+  async function loadRides() {
+    tableBody.innerHTML = "";
+    const snapshot = await getDocs(ridesCollection);
+    snapshot.forEach((docSnap) => {
+      addRow(docSnap.id, docSnap.data().name, docSnap.data().motorcycle);
     });
+  }
 
-    eraseAllBtn.addEventListener("click", function () {
-      localStorage.removeItem("rides");
-      tableBody.innerHTML = "";
-    });
+  async function addRide(name, motorcycle) {
+    await addDoc(ridesCollection, { name, motorcycle });
+    loadRides();
+  }
 
-    function saveEntry(name, motorcycle) {
-      const currentEntries = JSON.parse(localStorage.getItem("rides")) || [];
-      currentEntries.push({ name, motorcycle });
-      localStorage.setItem("rides", JSON.stringify(currentEntries));
+  async function deleteRide(id) {
+    await deleteDoc(doc(db, "rides", id));
+    loadRides();
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const motorcycle = motorcycleInput.value.trim();
+    if (!name || !motorcycle) return;
+    addRide(name, motorcycle);
+    form.reset();
+  });
+
+  eraseAllBtn.addEventListener("click", async function () {
+    const snapshot = await getDocs(ridesCollection);
+    for (const docSnap of snapshot.docs) {
+      await deleteDoc(doc(db, "rides", docSnap.id));
     }
+    loadRides();
+  });
 
-    function deleteEntry(index) {
-      const currentEntries = JSON.parse(localStorage.getItem("rides")) || [];
-      currentEntries.splice(index, 1);
-      localStorage.setItem("rides", JSON.stringify(currentEntries));
-    }
+  function addRow(id, name, motorcycle) {
+    const newRow = tableBody.insertRow();
+    newRow.insertCell(0).textContent = name;
+    newRow.insertCell(1).textContent = motorcycle;
 
-    function addRow(name, motorcycle) {
-      const newRow = tableBody.insertRow();
-      newRow.insertCell(0).textContent = name;
-      newRow.insertCell(1).textContent = motorcycle;
+    const actionCell = newRow.insertCell(2);
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.style.backgroundColor = "#e63946";
+    deleteBtn.style.color = "white";
+    deleteBtn.style.border = "none";
+    deleteBtn.style.padding = "5px 10px";
+    deleteBtn.style.borderRadius = "5px";
+    deleteBtn.style.cursor = "pointer";
 
-      const actionCell = newRow.insertCell(2);
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Delete";
-      deleteBtn.style.backgroundColor = "#e63946";
-      deleteBtn.style.color = "white";
-      deleteBtn.style.border = "none";
-      deleteBtn.style.padding = "5px 10px";
-      deleteBtn.style.borderRadius = "5px";
-      deleteBtn.style.cursor = "pointer";
-
-      deleteBtn.onclick = function () {
-        const rowIndex = newRow.rowIndex - 1;
-        deleteEntry(rowIndex);
-        tableBody.deleteRow(rowIndex);
-      };
-
-      actionCell.appendChild(deleteBtn);
-    }
-
-    window.onload = function () {
-      const savedEntries = JSON.parse(localStorage.getItem("rides")) || [];
-      savedEntries.forEach(entry => addRow(entry.name, entry.motorcycle));
+    deleteBtn.onclick = function () {
+      deleteRide(id);
     };
-  </script>
+
+    actionCell.appendChild(deleteBtn);
+  }
+
+  // Load data when the page loads
+  window.onload = loadRides;
+</script>
 </body>
 
 </html>
