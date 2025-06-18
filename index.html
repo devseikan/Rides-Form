@@ -17,29 +17,29 @@
       align-items: center;
       background: linear-gradient(to right, #dbeafe, #eff6ff);
       color: #1e3a8a;
-      padding: 2rem;
+      padding: 3rem;
     }
 
     h1 {
       font-family: Bungee Spice;
-      margin-bottom: 1rem;
-      font-size: 2rem;
+      margin-bottom: 2rem;
+      font-size: 3rem;
     }
 
     .time-container {
       display: flex;
-      gap: 2rem;
+      gap: 3rem;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
     }
 
     .clock {
       background: #ffffff;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      min-width: 250px;
+      padding: 3rem;
+      border-radius: 2rem;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      min-width: 350px;
       transition: transform 0.3s ease;
     }
 
@@ -48,40 +48,40 @@
     }
 
     .label {
-      font-size: 1.2rem;
+      font-size: 1.8rem;
       font-weight: 600;
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
       color: #1e40af;
     }
 
     .time {
-      font-size: 2rem;
+      font-size: 3rem;
       font-weight: bold;
       color: #0c4a6e;
     }
 
     .alarm-section {
       background: #f0f9ff;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
       width: 100%;
       text-align: center;
     }
 
     .alarm-section h2 {
-      font-size: 1.4rem;
-      margin-bottom: 1rem;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     .alarm-section input[type="time"],
     .alarm-section input[type="text"] {
-      padding: 0.5rem;
-      font-size: 1rem;
+      padding: 1rem;
+      font-size: 1.2rem;
       width: 100%;
       margin-bottom: 1rem;
-      border-radius: 8px;
+      border-radius: 10px;
       border: 1px solid #93c5fd;
     }
 
@@ -89,9 +89,9 @@
       background-color: #2563eb;
       color: white;
       border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 0.5rem;
-      font-size: 1rem;
+      padding: 0.8rem 1.5rem;
+      border-radius: 0.6rem;
+      font-size: 1.2rem;
       cursor: pointer;
     }
 
@@ -102,6 +102,7 @@
     .alarm-alert {
       margin-top: 1rem;
       font-weight: bold;
+      font-size: 1.2rem;
       color: red;
     }
   </style>
@@ -181,7 +182,7 @@
       alarmTime.setHours(hours, minutes, 0, 0);
 
       if (alarmTime < now) {
-        alarmTime.setDate(alarmTime.getDate() + 1); // set for next day
+        alarmTime.setDate(alarmTime.getDate() + 1); // next day
       }
 
       const timeDiff = alarmTime - now;
