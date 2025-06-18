@@ -1,216 +1,198 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Honk&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Rampart+One&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Vast+Shadow&display=swap" rel="stylesheet">
-  <title>June 12 Rides</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>World Clock + Alarm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
       margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    .logo {
-      display: block;
-      margin: 0 auto 20px auto;
-    }
-    .page-title {
-      text-align: center;
-      color: #000000;
-      font-family: 'Rubik Doodle Shadow', sans-serif;
-    }
-    .event-title {
-      font-family: 'Vast Shadow', sans-serif;
-      color: #000000;
-      font-weight: 400;
-      font-size: 50px;
-      text-align: center;
-    }
-    form {
+      font-family: 'Rubik', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 20px;
-      padding: 20px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(to right, #dbeafe, #eff6ff);
+      color: #1e3a8a;
+      padding: 2rem;
     }
-    form label {
-      margin-bottom: 10px;
+
+    h1 {
+      font-family: Bungee Spice;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+    }
+
+    .time-container {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .clock {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      min-width: 250px;
+      transition: transform 0.3s ease;
+    }
+
+    .clock:hover {
+      transform: scale(1.05);
+    }
+
+    .label {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #1e40af;
+    }
+
+    .time {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #0c4a6e;
+    }
+
+    .alarm-section {
+      background: #f0f9ff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
       width: 100%;
-      max-width: 300px;
-      text-align: left;
+      text-align: center;
     }
-    form input {
+
+    .alarm-section h2 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .alarm-section input[type="time"],
+    .alarm-section input[type="text"] {
+      padding: 0.5rem;
+      font-size: 1rem;
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: 1px solid #93c5fd;
     }
-    button {
-      padding: 10px 20px;
-      background-color: #f4a261;
+
+    .alarm-section button {
+      background-color: #2563eb;
       color: white;
       border: none;
-      border-radius: 5px;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
       cursor: pointer;
-      margin-top: 10px;
     }
-    #eraseAllBtn {
-      background-color: #e63946;
+
+    .alarm-section button:hover {
+      background-color: #1d4ed8;
     }
-    .button-center {
-      text-align: center;
-      margin-top: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-    th {
-      background-color: #f4a261;
-      color: white;
-    }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
+
+    .alarm-alert {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: red;
     }
   </style>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
 </head>
 <body>
-  <h1 class="page-title">JUNE 12 RIDES</h1>
-  <div class="container">
-    <h1 class="event-title">North Cebu Baptist Church</h1>
-    <img src="https://yt3.googleusercontent.com/ytc/AIdro_kFZaCIGRDOpM8AwzDMjCvLwPxAzTxWz4wrKLVZXikOpA=s900-c-k-c0x00ffffff-no-rj" width="300" class="logo" />
-
-    <form id="userForm">
-      <label>Name: <input type="text" id="name" required></label>
-      <label>Motorcycle: <input type="text" id="motorcycle" required></label>
-      <button type="submit">Add to Table</button>
-    </form>
-
-    <table id="userTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Motorcycle</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <div class="button-center">
-      <button id="eraseAllBtn">Erase All</button>
+  <h1>World Clock</h1>
+  <div class="time-container">
+    <div class="clock">
+      <div class="label">🇵🇭 Philippines Time (PHT)</div>
+      <div id="timePHT" class="time">--:--:--</div>
+    </div>
+    <div class="clock">
+      <div class="label">🇺🇸 Eastern Time (EST/EDT)</div>
+      <div id="timeEST" class="time">--:--:--</div>
+    </div>
+    <div class="clock">
+      <div class="label">🇺🇸 Pacific Time (PST/PDT)</div>
+      <div id="timePST" class="time">--:--:--</div>
     </div>
   </div>
 
+  <div class="alarm-section">
+    <h2>⏰ Set Alarm (Your Local Time)</h2>
+    <input type="time" id="alarmTime" />
+    <input type="text" id="alarmMessage" placeholder="Alarm message (optional)" />
+    <button onclick="setAlarm()">Set Alarm</button>
+    <div id="alarmAlert" class="alarm-alert"></div>
+  </div>
+
+  <audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
   <script>
-    // Your Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDMasEE3Xx6bZivduxnAmhXmIPzHzbltRE",
-      authDomain: "ncbcrides.firebaseapp.com",
-      projectId: "ncbcrides",
-      storageBucket: "ncbcrides.firebasestorage.app",
-      messagingSenderId: "952843816808",
-      appId: "1:952843816808:web:50ed3153edcc2a3c9410dd",
-      measurementId: "G-NKTEMYRWVY"
-    };
+    function updateTimes() {
+      const options = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      };
+      const now = new Date();
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const collectionRef = db.collection("rides");
+      document.getElementById('timePHT').textContent = now.toLocaleTimeString('en-PH', {
+        ...options,
+        timeZone: 'Asia/Manila'
+      });
 
-    const form = document.getElementById("userForm");
-    const nameInput = document.getElementById("name");
-    const motorcycleInput = document.getElementById("motorcycle");
-    const tableBody = document.querySelector("#userTable tbody");
-    const eraseAllBtn = document.getElementById("eraseAllBtn");
+      document.getElementById('timeEST').textContent = now.toLocaleTimeString('en-US', {
+        ...options,
+        timeZone: 'America/New_York'
+      });
 
-    // Add entry to Firestore
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const name = nameInput.value.trim();
-      const motorcycle = motorcycleInput.value.trim();
-      if (!name || !motorcycle) return;
-
-      try {
-        const docRef = await collectionRef.add({ name, motorcycle });
-        addRow(name, motorcycle, docRef.id);
-        form.reset();
-      } catch (err) {
-        console.error("Error adding document:", err);
-      }
-    });
-
-    // Delete all from Firestore
-    eraseAllBtn.addEventListener("click", async () => {
-      const snapshot = await collectionRef.get();
-      const batch = db.batch();
-      snapshot.forEach(doc => batch.delete(doc.ref));
-      await batch.commit();
-      tableBody.innerHTML = "";
-    });
-
-    // Load data on page load
-    async function loadData() {
-      const snapshot = await collectionRef.get();
-      snapshot.forEach(doc => {
-        const { name, motorcycle } = doc.data();
-        addRow(name, motorcycle, doc.id);
+      document.getElementById('timePST').textContent = now.toLocaleTimeString('en-US', {
+        ...options,
+        timeZone: 'America/Los_Angeles'
       });
     }
 
-    // Add row to table
-    function addRow(name, motorcycle, docId) {
-      const newRow = tableBody.insertRow();
-      newRow.insertCell(0).textContent = name;
-      newRow.insertCell(1).textContent = motorcycle;
+    updateTimes();
+    setInterval(updateTimes, 1000);
 
-      const actionCell = newRow.insertCell(2);
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Delete";
-      deleteBtn.style.backgroundColor = "#e63946";
-      deleteBtn.style.color = "white";
-      deleteBtn.style.border = "none";
-      deleteBtn.style.padding = "5px 10px";
-      deleteBtn.style.borderRadius = "5px";
-      deleteBtn.style.cursor = "pointer";
+    let alarmTimeout;
 
-      deleteBtn.onclick = async function () {
-        await collectionRef.doc(docId).delete();
-        tableBody.removeChild(newRow);
-      };
+    function setAlarm() {
+      clearTimeout(alarmTimeout);
+      const timeInput = document.getElementById("alarmTime").value;
+      const message = document.getElementById("alarmMessage").value || "⏰ Alarm!";
 
-      actionCell.appendChild(deleteBtn);
+      if (!timeInput) {
+        alert("Please set a time for the alarm.");
+        return;
+      }
+
+      const now = new Date();
+      const [hours, minutes] = timeInput.split(":").map(Number);
+
+      const alarmTime = new Date();
+      alarmTime.setHours(hours, minutes, 0, 0);
+
+      if (alarmTime < now) {
+        alarmTime.setDate(alarmTime.getDate() + 1); // set for next day
+      }
+
+      const timeDiff = alarmTime - now;
+      document.getElementById("alarmAlert").textContent = `Alarm set for ${timeInput}`;
+
+      alarmTimeout = setTimeout(() => {
+        document.getElementById("alarmAlert").textContent = message;
+        document.getElementById("alarmSound").play();
+        alert(message);
+      }, timeDiff);
     }
-
-    window.onload = loadData;
   </script>
 </body>
 </html>
