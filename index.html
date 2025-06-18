@@ -9,12 +9,12 @@
     body {
       margin: 0;
       font-family: 'Rubik', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       background: linear-gradient(to right, #dbeafe, #eff6ff);
       color: #1e3a8a;
       padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     h1 {
@@ -35,74 +35,61 @@
       padding: 2rem;
       border-radius: 2rem;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-      min-width: 350px;
-      transition: transform 0.3s ease;
+      width: 300px;
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    .clock:hover {
-      transform: scale(1.05);
     }
 
     .label {
       font-size: 1.5rem;
       font-weight: 600;
       margin-bottom: 1rem;
-      color: #1e40af;
     }
 
     canvas {
-      width: 150px;
-      height: 150px;
+      width: 200px;
+      height: 200px;
       margin-bottom: 1rem;
     }
 
     .time {
-      font-size: 2rem;
+      font-size: 1.6rem;
       font-weight: bold;
-      color: #0c4a6e;
     }
 
     .alarm-section {
       background: #f0f9ff;
       padding: 2rem;
       border-radius: 1.5rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       max-width: 600px;
       width: 100%;
       text-align: center;
     }
 
-    .alarm-section h2 {
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .alarm-section input[type="time"],
-    .alarm-section input[type="text"] {
-      padding: 1rem;
-      font-size: 1.2rem;
-      width: 100%;
+    .alarm-section input,
+    .alarm-section select {
+      padding: 0.8rem;
       margin-bottom: 1rem;
-      border-radius: 10px;
+      font-size: 1rem;
+      width: 100%;
+      border-radius: 0.5rem;
       border: 1px solid #93c5fd;
     }
 
     .alarm-section button {
+      padding: 0.7rem 1.2rem;
+      margin: 0.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.5rem;
       background-color: #2563eb;
       color: white;
-      border: none;
-      padding: 0.8rem 1.5rem;
-      border-radius: 0.6rem;
-      font-size: 1.2rem;
       cursor: pointer;
-      margin: 0.3rem;
     }
 
     .alarm-section button:hover {
-      background-color: #1d4ed8;
+      background-color: #1e40af;
     }
 
     .alarm-alert {
@@ -117,66 +104,65 @@
   <h1>World Clock</h1>
   <div class="time-container">
     <div class="clock">
-      <div class="label">🇵🇭 Philippines Time (PHT)</div>
-      <canvas id="canvasPHT"></canvas>
+      <div class="label">Philippines Time (PHT)</div>
+      <canvas id="canvasPHT" width="200" height="200"></canvas>
       <div id="timePHT" class="time">--:--:--</div>
     </div>
     <div class="clock">
-      <div class="label">🇺🇸 Eastern Time (EST/EDT)</div>
-      <canvas id="canvasEST"></canvas>
+      <div class="label">Eastern Time (EST)</div>
+      <canvas id="canvasEST" width="200" height="200"></canvas>
       <div id="timeEST" class="time">--:--:--</div>
     </div>
     <div class="clock">
-      <div class="label">🇺🇸 Pacific Time (PST/PDT)</div>
-      <canvas id="canvasPST"></canvas>
+      <div class="label">Pacific Time (PST)</div>
+      <canvas id="canvasPST" width="200" height="200"></canvas>
       <div id="timePST" class="time">--:--:--</div>
     </div>
   </div>
 
   <div class="alarm-section">
-    <h2>⏰ Set Alarm (Your Local Time)</h2>
-    <input type="time" id="alarmTime" />
-    <input type="text" id="alarmMessage" placeholder="Alarm message (optional)" />
+    <h2>Set Alarm</h2>
+    <input type="time" id="alarmTime">
+    <input type="text" id="alarmMessage" placeholder="Alarm Message">
+    <select id="alarmSound">
+      <option value="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">Default Alarm</option>
+      <option value="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">Beep</option>
+      <option value="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">Digital Watch</option>
+    </select>
     <div>
       <button onclick="setAlarm()">Set Alarm</button>
       <button onclick="cancelAlarm()">Cancel Alarm</button>
+      <button onclick="snoozeAlarm()">Snooze 5min</button>
     </div>
     <div id="alarmAlert" class="alarm-alert"></div>
   </div>
 
-<audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+  <audio id="alarmSoundPlayer" preload="auto"></audio>
 
   <script>
-    const canvasClocks = {
-      PHT: document.getElementById('canvasPHT').getContext('2d'),
-      EST: document.getElementById('canvasEST').getContext('2d'),
-      PST: document.getElementById('canvasPST').getContext('2d'),
-    };
-
     const zones = {
       PHT: 'Asia/Manila',
       EST: 'America/New_York',
       PST: 'America/Los_Angeles'
     };
 
-    function drawAnalogClock(ctx, date) {
-      const radius = 75;
+    function drawClock(ctx, date) {
+      const radius = 100;
+      ctx.clearRect(0, 0, 200, 200);
       ctx.save();
-      ctx.clearRect(0, 0, 150, 150);
       ctx.translate(radius, radius);
       ctx.beginPath();
-      ctx.arc(0, 0, radius - 4, 0, 2 * Math.PI);
-      ctx.fillStyle = '#eff6ff';
+      ctx.arc(0, 0, radius - 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
       ctx.fill();
-      ctx.strokeStyle = '#1e3a8a';
-      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#ccc';
       ctx.stroke();
 
       const hour = date.getHours() % 12;
       const minute = date.getMinutes();
       const second = date.getSeconds();
 
-      function drawHand(angle, length, width, color) {
+      const drawHand = (angle, length, width, color) => {
         ctx.beginPath();
         ctx.rotate(angle);
         ctx.moveTo(0, 0);
@@ -185,78 +171,94 @@
         ctx.strokeStyle = color;
         ctx.stroke();
         ctx.rotate(-angle);
-      }
+      };
 
-      drawHand((Math.PI / 6) * hour + (Math.PI / 360) * minute, radius * 0.5, 6, '#0c4a6e');
-      drawHand((Math.PI / 30) * minute, radius * 0.7, 4, '#2563eb');
+      drawHand((Math.PI / 6) * hour + (Math.PI / 360) * minute, radius * 0.5, 6, '#333');
+      drawHand((Math.PI / 30) * minute, radius * 0.7, 4, '#1d4ed8');
       drawHand((Math.PI / 30) * second, radius * 0.85, 2, '#ef4444');
+
       ctx.beginPath();
-      ctx.arc(0, 0, 4, 0, 2 * Math.PI);
-      ctx.fillStyle = '#1e3a8a';
+      ctx.arc(0, 0, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#000';
       ctx.fill();
+
       ctx.restore();
     }
 
-    function updateTimeZones() {
-      const options = {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
-      };
-
-      Object.entries(zones).forEach(([key, tz]) => {
+    function updateTime() {
+      for (const key in zones) {
         const now = new Date();
-        const timeString = now.toLocaleTimeString('en-US', { ...options, timeZone: tz });
-        document.getElementById(`time${key}`).textContent = timeString;
+        const locale = now.toLocaleTimeString('en-US', { timeZone: zones[key] });
+        document.getElementById(`time${key}`).textContent = locale;
 
-        const timeInZone = new Date(
-          new Intl.DateTimeFormat('en-US', {
-            timeZone: tz,
-            hour: 'numeric', minute: 'numeric', second: 'numeric',
-            hour12: false
-          }).format(now)
-        );
-        drawAnalogClock(canvasClocks[key], timeInZone);
-      });
+        const ctx = document.getElementById(`canvas${key}`).getContext('2d');
+        const parts = new Intl.DateTimeFormat('en-US', {
+          hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false,
+          timeZone: zones[key]
+        }).formatToParts(now);
+
+        const h = +parts.find(p => p.type === 'hour').value;
+        const m = +parts.find(p => p.type === 'minute').value;
+        const s = +parts.find(p => p.type === 'second').value;
+        const time = new Date();
+        time.setHours(h, m, s, 0);
+        drawClock(ctx, time);
+      }
     }
+    setInterval(updateTime, 1000);
+    updateTime();
 
-    updateTimeZones();
-    setInterval(updateTimeZones, 1000);
-
-    let alarmTimeout;
+    let alarmTimeout = null;
+    let repeatInterval = null;
 
     function setAlarm() {
-      clearTimeout(alarmTimeout);
-      const timeInput = document.getElementById("alarmTime").value;
-      const message = document.getElementById("alarmMessage").value || "⏰ Alarm!";
+      cancelAlarm();
+      const timeInput = document.getElementById('alarmTime').value;
+      const message = document.getElementById('alarmMessage').value || "Alarm!";
+      const sound = document.getElementById('alarmSound').value;
 
-      if (!timeInput) {
-        alert("Please set a time for the alarm.");
-        return;
-      }
+      if (!timeInput) return alert("Set a time first.");
 
+      const [h, m] = timeInput.split(":").map(Number);
       const now = new Date();
-      const [hours, minutes] = timeInput.split(":").map(Number);
       const alarmTime = new Date();
-      alarmTime.setHours(hours, minutes, 0, 0);
+      alarmTime.setHours(h, m, 0, 0);
+      if (alarmTime < now) alarmTime.setDate(alarmTime.getDate() + 1);
 
-      if (alarmTime < now) {
-        alarmTime.setDate(alarmTime.getDate() + 1);
-      }
-
-      const timeDiff = alarmTime - now;
+      const diff = alarmTime - now;
+      alarmTimeout = setTimeout(() => triggerAlarm(message, sound), diff);
       document.getElementById("alarmAlert").textContent = `Alarm set for ${timeInput}`;
-      alarmTimeout = setTimeout(() => {
-        document.getElementById("alarmAlert").textContent = message;
-        document.getElementById("alarmSound").play();
-        alert(message);
-      }, timeDiff);
+    }
+
+    function triggerAlarm(message, soundURL) {
+      const audio = document.getElementById("alarmSoundPlayer");
+      audio.src = soundURL;
+      audio.loop = true;
+      audio.play();
+      alert(message);
+      repeatInterval = setInterval(() => {
+        audio.currentTime = 0;
+        audio.play();
+      }, 60000);
     }
 
     function cancelAlarm() {
       clearTimeout(alarmTimeout);
+      clearInterval(repeatInterval);
+      const audio = document.getElementById("alarmSoundPlayer");
+      audio.pause();
+      audio.currentTime = 0;
       document.getElementById("alarmAlert").textContent = "Alarm cancelled.";
+    }
+
+    function snoozeAlarm() {
+      cancelAlarm();
+      document.getElementById("alarmAlert").textContent = "Snoozed for 5 minutes.";
+      alarmTimeout = setTimeout(() => {
+        const msg = document.getElementById('alarmMessage').value || "Alarm!";
+        const snd = document.getElementById('alarmSound').value;
+        triggerAlarm(msg, snd);
+      }, 5 * 60000);
     }
   </script>
 </body>
