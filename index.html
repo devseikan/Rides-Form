@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>World Clock + Alarm</title>
+  <title>World Clock</title>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -27,7 +27,7 @@
       gap: 3rem;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
     }
 
     .clock {
@@ -58,45 +58,24 @@
       font-weight: bold;
     }
 
-    .alarm-section {
-      background: #f0f9ff;
-      padding: 2rem;
-      border-radius: 1.5rem;
-      max-width: 600px;
-      width: 100%;
-      text-align: center;
-    }
-
-    .alarm-section input,
-    .alarm-section select {
-      padding: 0.8rem;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-      width: 100%;
-      border-radius: 0.5rem;
-      border: 1px solid #93c5fd;
-    }
-
-    .alarm-section button {
-      padding: 0.7rem 1.2rem;
-      margin: 0.5rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 0.5rem;
-      background-color: #2563eb;
-      color: white;
-      cursor: pointer;
-    }
-
-    .alarm-section button:hover {
-      background-color: #1e40af;
-    }
-
-    .alarm-alert {
+    .placeholder-buttons {
+      display: flex;
+      gap: 1.5rem;
       margin-top: 1rem;
-      font-weight: bold;
-      font-size: 1.2rem;
-      color: red;
+    }
+
+    .placeholder-buttons a {
+      padding: 0.75rem 1.5rem;
+      border-radius: 1rem;
+      background-color: #3b82f6;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .placeholder-buttons a:hover {
+      background-color: #2563eb;
     }
   </style>
 </head>
@@ -120,24 +99,10 @@
     </div>
   </div>
 
-  <div class="alarm-section">
-    <h2>Set Alarm</h2>
-    <input type="time" id="alarmTime">
-    <input type="text" id="alarmMessage" placeholder="Alarm Message">
-    <select id="alarmSound">
-      <option value="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">Default Alarm</option>
-      <option value="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">Beep</option>
-      <option value="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">Digital Watch</option>
-    </select>
-    <div>
-      <button onclick="setAlarm()">Set Alarm</button>
-      <button onclick="cancelAlarm()">Cancel Alarm</button>
-      <button onclick="snoozeAlarm()">Snooze 5min</button>
-    </div>
-    <div id="alarmAlert" class="alarm-alert"></div>
+  <div class="placeholder-buttons">
+    <a href="https://devseikan.github.io/dailytracker/" target="_blank">Daily Tracker</a>
+    <a href="https://devseikan.github.io/PC-Build/" target="_blank">PC Build</a>
   </div>
-
-  <audio id="alarmSoundPlayer" preload="auto"></audio>
 
   <script>
     const zones = {
@@ -205,61 +170,9 @@
         drawClock(ctx, time);
       }
     }
+
     setInterval(updateTime, 1000);
     updateTime();
-
-    let alarmTimeout = null;
-    let repeatInterval = null;
-
-    function setAlarm() {
-      cancelAlarm();
-      const timeInput = document.getElementById('alarmTime').value;
-      const message = document.getElementById('alarmMessage').value || "Alarm!";
-      const sound = document.getElementById('alarmSound').value;
-
-      if (!timeInput) return alert("Set a time first.");
-
-      const [h, m] = timeInput.split(":").map(Number);
-      const now = new Date();
-      const alarmTime = new Date();
-      alarmTime.setHours(h, m, 0, 0);
-      if (alarmTime < now) alarmTime.setDate(alarmTime.getDate() + 1);
-
-      const diff = alarmTime - now;
-      alarmTimeout = setTimeout(() => triggerAlarm(message, sound), diff);
-      document.getElementById("alarmAlert").textContent = `Alarm set for ${timeInput}`;
-    }
-
-    function triggerAlarm(message, soundURL) {
-      const audio = document.getElementById("alarmSoundPlayer");
-      audio.src = soundURL;
-      audio.loop = true;
-      audio.play();
-      alert(message);
-      repeatInterval = setInterval(() => {
-        audio.currentTime = 0;
-        audio.play();
-      }, 60000);
-    }
-
-    function cancelAlarm() {
-      clearTimeout(alarmTimeout);
-      clearInterval(repeatInterval);
-      const audio = document.getElementById("alarmSoundPlayer");
-      audio.pause();
-      audio.currentTime = 0;
-      document.getElementById("alarmAlert").textContent = "Alarm cancelled.";
-    }
-
-    function snoozeAlarm() {
-      cancelAlarm();
-      document.getElementById("alarmAlert").textContent = "Snoozed for 5 minutes.";
-      alarmTimeout = setTimeout(() => {
-        const msg = document.getElementById('alarmMessage').value || "Alarm!";
-        const snd = document.getElementById('alarmSound').value;
-        triggerAlarm(msg, snd);
-      }, 5 * 60000);
-    }
   </script>
 </body>
 </html>
